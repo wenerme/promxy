@@ -562,11 +562,15 @@ static_configs:
 				t.Fatalf("unexpected error applying config: %v", err)
 			}
 
-			// With no auth configured the base transport is the client's
-			// round-tripper directly -- no wrapping to unwrap.
-			transport, ok := sg.httpClient().Transport.(*http.Transport)
+			// With no auth configured the only wrapper around the base transport
+			// is request coalescing (enabled by default).
+			rt := sg.httpClient().Transport
+			if ct, ok := rt.(*coalesceTransport); ok {
+				rt = ct.next
+			}
+			transport, ok := rt.(*http.Transport)
 			if !ok {
-				t.Fatalf("expected *http.Transport, got %T", sg.httpClient().Transport)
+				t.Fatalf("expected *http.Transport, got %T", rt)
 			}
 
 			if transport.ForceAttemptHTTP2 != tt.want {

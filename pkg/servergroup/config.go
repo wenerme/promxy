@@ -28,6 +28,7 @@ var (
 		MaxIdleConnsPerHost: 1000,
 		IdleConnTimeout:     5 * time.Minute,
 		PreferMax:           false,
+		CoalesceRequests:    true,
 		HTTPConfig: HTTPClientConfig{
 			DialTimeout: time.Millisecond * 200, // Default dial timeout of 200ms
 		},
@@ -183,6 +184,12 @@ type Config struct {
 
 	// IdleConnTimeout, time wait to close a idle connections.
 	IdleConnTimeout time.Duration `yaml:"idle_conn_timeout,omitempty"`
+
+	// CoalesceRequests merges identical concurrent read requests (query, query_range,
+	// series, labels, label values) to this servergroup into a single downstream request.
+	// Identical means same method, URL, headers and body, so results are unchanged.
+	// Enabled by default.
+	CoalesceRequests bool `yaml:"coalesce_requests"`
 
 	// IgnoreError will hide all errors from this given servergroup effectively making
 	// the responses from this servergroup "not required" for the result.

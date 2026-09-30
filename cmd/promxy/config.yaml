@@ -196,6 +196,10 @@ promxy:
       # Time wait to close a idle connections.
       idle_conn_timeout: 300s
 
+      # Merge identical concurrent read requests (same method, URL, headers and body) to this
+      # servergroup into a single downstream request. Results are unchanged. Defaults to true.
+      coalesce_requests: true
+
       # Converts all errors to warnings from this given servergroup effectively making
       # the responses from this servergroup "not required" for the result.
       downgrade_error: true

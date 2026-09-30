@@ -588,6 +588,11 @@ func (s *ServerGroup) ApplyConfig(cfg *Config) error {
 		)
 	}
 
+	// Merge identical concurrent read requests into a single downstream request.
+	if cfg.CoalesceRequests {
+		rt = newCoalesceTransport(rt)
+	}
+
 	// Publish the client before the config so that any reader which sees the
 	// new config also sees the client that was built from it.
 	s.client.Store(&http.Client{Transport: rt})
